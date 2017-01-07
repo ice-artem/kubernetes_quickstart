@@ -1,3 +1,7 @@
+  - name: Wait for kubernetes to settle
+    pause:
+      seconds: 5
+
   - name: Drain ingress controller
     shell: kubectl drain {{ drainable_ingress_controller }}
     ignore_errors: yes
