@@ -1,0 +1,17 @@
+  - name: Install etcd
+    yum: name=etcd
+
+  - name: Edit /etc/etcd/etcd.conf
+    lineinfile: dest=/etc/etcd/etcd.conf regexp='^ETCD_LISTEN_CLIENT_URLS=' line='ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"' backrefs=yes
+
+  - name: Enable and restart etcd
+    service: name=etcd state=started enabled=yes
+
+  - name: Wait for etcd to settle
+    pause:
+      seconds: 5
+
+  - name: Create a flannel network
+    shell: etcdctl mk /atomic.io/network/config '{"Network":"172.30.0.0/16","SubnetLen":24, "Backend":{ "Type":"vxlan" }}'
+    #shell: etcdctl mk /atomic.io/network/config '{"Network":"172.17.0.0/16"}'
+    ignore_errors: yes

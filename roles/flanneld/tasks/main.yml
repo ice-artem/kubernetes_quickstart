@@ -1,0 +1,12 @@
+  - name: Flannel installation
+    yum: name=flannel
+
+  - name: Edit /etc/sysconfig/flanneld(FLANNEL_ETCD=)
+    lineinfile: dest=/etc/sysconfig/flanneld regexp='^FLANNEL_ETCD_ENDPOINTS=' backrefs=yes line='FLANNEL_ETCD_ENDPOINTS="http://{{ kube_master }}:2379"'
+    #lineinfile: dest=/etc/sysconfig/flanneld regexp='^FLANNEL_ETCD=' backrefs=yes line='FLANNEL_ETCD="http://{{ kube_master }}:2379"'
+
+  - name: Edit /etc/sysconfig/flanneld(FLANNEL_OPTIONS=)
+    lineinfile: dest=/etc/sysconfig/flanneld regexp='FLANNEL_OPTIONS=' backrefs=yes line='FLANNEL_OPTIONS="--iface={{ flannel_interface }}"'
+
+  - name: Enable and start flanneld
+    service: name=flanneld state=started enabled=yes

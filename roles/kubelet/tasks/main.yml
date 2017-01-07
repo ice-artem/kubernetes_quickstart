@@ -1,0 +1,19 @@
+  - name: Install kubernetes
+    yum: name=kubernetes
+
+  - name: Edit /etc/kubernetes/config
+    lineinfile: dest=/etc/kubernetes/config regexp='^KUBE_MASTER=' backrefs=yes line='KUBE_MASTER="--master=http://{{ kube_master }}:8080"'
+  - name: Edit /etc/kubernetes/kubelet(KUBELET_ADDRESS=)
+    lineinfile: dest=/etc/kubernetes/kubelet regexp='^KUBELET_ADDRESS=' backrefs=yes line='KUBELET_ADDRESS="--address=0.0.0.0"'
+  - name: Edit /etc/kubernetes/kubelet(KUBELET_PORT=)
+    lineinfile: dest=/etc/kubernetes/kubelet regexp='KUBELET_PORT' backrefs=yes line='KUBELET_PORT="--port=10250"'
+  - name: Edit /etc/kubernetes/kubelet(KUBELET_HOSTNAME=)
+    lineinfile: dest=/etc/kubernetes/kubelet regexp='^KUBELET_HOSTNAME' backrefs=yes line='KUBELET_HOSTNAME="--hostname_override={{ inventory_hostname }}"'
+  - name: Edit /etc/kubernetes/kubelet(KUBELET_API_SERVER=)
+    lineinfile: dest=/etc/kubernetes/kubelet regexp='^KUBELET_API_SERVER=' backrefs=yes line='KUBELET_API_SERVER="--api_servers=http://{{ kube_master }}:8080"'
+
+  - name: Enable kube-proxy kubelet
+    service: name={{ item }} state=started enabled=yes
+    with_items:
+      - kube-proxy
+      - kubelet

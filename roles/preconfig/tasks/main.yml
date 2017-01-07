@@ -1,0 +1,15 @@
+  - name: Install epel-release
+    yum: name=epel-release
+
+  - name: Install vim, htop, ntp
+    yum: name={{ item }}
+    with_items:
+      - vim
+      - htop
+      - ntp
+
+  - name: Disable firewalld
+    service: name=firewalld enabled=no state=stopped
+
+  - name: Start and enable ntpd
+    service: name=ntpd enabled=yes state=started

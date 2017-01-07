@@ -1,0 +1,19 @@
+  - name: Install kubernetes
+    yum: name=kubernetes
+
+  - name: Edit /etc/kubernetes/apiserver (setting KUBE_API_ADDRESS=)
+    lineinfile: dest=/etc/kubernetes/apiserver regexp='^KUBE_API_ADDRESS=' backrefs=yes line='KUBE_API_ADDRESS="--address=0.0.0.0"'
+  - name: Edit /etc/kubernetes/apiserver (setting KUBE_API_PORT=)
+    lineinfile: dest=/etc/kubernetes/apiserver regexp='KUBE_API_PORT=' backrefs=yes line='KUBE_API_PORT="--port=8080"'
+  - name: Edit /etc/kubernetes/apiserver (setting KUBELET_PORT=)
+    lineinfile: dest=/etc/kubernetes/apiserver regexp='KUBELET_PORT=' backrefs=yes line='KUBELET_PORT="--kubelet_port=10250"'
+
+  - name: Edit /etc/kubernetes/apiserver (Workaround for https://github.com/kubernetes/kubernetes/issues/11222)
+    lineinfile: dest=/etc/kubernetes/apiserver regexp='KUBE_ADMISSION_CONTROL=' backrefs=yes line='KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota"'
+
+  - name: Enable kube-apiserver, kube-controller-manager and kube-scheduler
+    service: name={{ item }} state=started enabled=yes
+    with_items:
+      - kube-apiserver
+      - kube-controller-manager
+      - kube-scheduler

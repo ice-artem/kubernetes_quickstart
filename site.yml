@@ -1,0 +1,31 @@
+---
+  - hosts: all
+    become: yes
+    user: vagrant
+    roles:
+      - role: preconfig
+
+  - hosts: masters
+    become: yes
+    user: vagrant
+    roles:
+      - role: etcd
+      - role: apiserver
+
+  - hosts: minions 
+    become: yes
+    user: vagrant
+    vars:
+      kube_master: "{{ groups['masters'].0 }}"
+      flannel_interface: "eth1"
+    roles:
+      - role: flanneld
+      - role: kubelet
+
+  - hosts: masters
+    become: yes
+    user: vagrant
+    vars:
+      drainable_ingress_controller: "{{ groups['ingress'].0 }}"
+    roles:
+      - role: drain-ingress-controller
