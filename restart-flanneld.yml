@@ -1,0 +1,7 @@
+---
+  - hosts: minions 
+    become: yes
+    user: vagrant
+    tasks:
+      - name: Restart Flanneld
+        service: name=flanneld state=restarted

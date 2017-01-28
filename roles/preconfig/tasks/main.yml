@@ -11,5 +11,8 @@
   - name: Disable firewalld
     service: name=firewalld enabled=no state=stopped
 
+  - name: Disable Selinux
+    selinux: state=disabled
+
   - name: Start and enable ntpd
     service: name=ntpd enabled=yes state=started
