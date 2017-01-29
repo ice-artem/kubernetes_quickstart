@@ -1,4 +1,4 @@
-# Ansible playbook for quick start with Kubernetes on Centos7
+# Ansible playbook for a quick start with Kubernetes on Centos7
 
 ## Get your environment ready:
 ```
@@ -23,12 +23,17 @@ $ vagrant ssh ingress
     inet6 fe80::a00:27ff:fe11:9482/64 scope link 
        valid_lft forever preferred_lft forever
 
-Those are supposed to be your external IP-addresses
+Those are supposed to be your pseudo-external IP-addresses
 ```
 
 ## Run ansible playbook
 ```
 $ ansible-playbook -i inventory site.yml
+```
+
+## Sometimes you need to restart flanneld in case of network failures
+```
+$ ansible-playbook -i inventory restart-flanneld.yml
 ```
 
 ## Enter the master node
@@ -44,5 +49,14 @@ $ vagrant ssh master
 ## Try connecting to your mysql pod within your host-machine, using the "external" ip-address:
 ```
 $ mysql -h 192.168.11.15 -u root -p
-<myassword>
+myassword
 ```
+
+## You can also try a more complicated example, which is actually a slightly modified Guestbook multitier application
+```
+$ vagrant ssh master
+[vagrant@master ~]# cd /vagrant/examples/guestbook
+[vagrant@master ~]# kubectl create -f all-in-one/guestbook-all-in-one.yaml
+[vagrant@master ~]# kubectl get pods
+```
+## Try opening http://192.168.11.14 in your browser
